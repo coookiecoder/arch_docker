@@ -1,0 +1,22 @@
+# because not enough space SO FUCK YOU I'M WORKING IN DOCKER
+
+services:
+
+  session:
+    image: session:42
+    container_name: session
+    build: ./
+    restart: always
+    ports:
+      - "3390:3389"
+    volumes:
+      - shared:/home/abareux/shared
+
+volumes:
+
+  shared:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/abareux/shared
+      o: bind
