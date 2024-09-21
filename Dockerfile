@@ -5,7 +5,7 @@ RUN pacman -Syu --noconfirm
 RUN pacman -Sy plasma --noconfirm
 RUN pacman -Sy kde-applications --noconfirm
 
-RUN pacman -Sy sudo git base-devel nasm check fuse libfdk-aac ffmpeg imlib2 --noconfirm
+RUN pacman -Sy sudo git base-devel nasm check fuse libfdk-aac ffmpeg imlib2 xorg-drivers --noconfirm
 
 #FUCK YOU MAKEPKG
 
@@ -25,6 +25,9 @@ RUN yes Y | makepkg -si
 
 USER root
 
+WORKDIR /home/abareux
+RUN rm -rf xrdp
+
 RUN pacman -Sy git --noconfirm
 RUN pacman -Sy vim --noconfirm
 #RUN DEBIAN_FRONTEND=noninteractive apt install cargo -y
@@ -38,8 +41,6 @@ RUN pacman -Sy vim --noconfirm
 #RUN DEBIAN_FRONTEND=noninteractive apt install libglfw3-dev -y
 #RUN DEBIAN_FRONTEND=noninteractive apt install libclang-dev -y
 #RUN DEBIAN_FRONTEND=noninteractive apt install libclang-cpp-dev -y
-
-RUN echo "root:root" | chpasswd
 
 COPY ./start.sh /start.sh
 
