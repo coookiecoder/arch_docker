@@ -5,28 +5,30 @@ RUN pacman -Syu --noconfirm
 RUN pacman -Sy plasma --noconfirm
 RUN pacman -Sy kde-applications --noconfirm
 
-RUN pacman -Sy sudo git base-devel nasm check fuse libfdk-aac ffmpeg imlib2 xorg-drivers --noconfirm
-
-#FUCK YOU MAKEPKG
+RUN pacman -Sy sudo git base-devel nasm check fuse libfdk-aac ffmpeg imlib2 xorg-drivers fakeroot xorg-xinit sddm dbus --noconfirm
 
 RUN useradd abareux
 RUN echo "abareux:abareux" | chpasswd
 RUN echo "abareux ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+RUN mkdir -p /home/abareux
+RUN chown -R "abareux:abareux" /home/abareux
+COPY xinitrc /home/abareux/.xinitrc
 
-USER abareux
+RUN useradd -m -G wheel -s /bin/bash builder && echo "builder ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/builder
 
-WORKDIR /home/abareux
-RUN git clone https://aur.archlinux.org/xrdp.git
-RUN chown -R abareux /home/abareux
-WORKDIR xrdp
-RUN yes Y | makepkg -si
+USER builder
+WORKDIR /home/builder
 
-#END FUCK YOU MAKEPKG
+RUN git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si --noconfirm
+
+RUN rm -rf /home/builder/yay
+
+RUN yay -S --noconfirm xrdp xorgxrdp
 
 USER root
 
-WORKDIR /home/abareux
-RUN rm -rf xrdp
+RUN mkdir -p /etc/X11
+COPY Xwrapper.config /etc/X11/Xwrapper.config
 
 RUN pacman -Sy git --noconfirm
 RUN pacman -Sy vim --noconfirm
